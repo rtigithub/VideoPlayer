@@ -134,10 +134,18 @@ namespace ComputerVisionVideoPlayer
                //DisplayImage(SegmentedImage, pictureBox2);
                Blob[] _blobs = SegmentBlobs(SegmentedImage);
                List<Rectangle> regions = FindShapes(SegmentedImage, _blobs);
-
+               DisplayRegionsOnSourceImage(MyImage, regions);
                Crop crop = new Crop(regions[0]);
-               Bitmap FinalImage = crop.Apply(MyImage);
-               DisplayImage(FinalImage, pictureBox2);
+               DisplayImage(crop.Apply(MyImage), pictureBox2);
+          }
+
+          private void DisplayRegionsOnSourceImage(Bitmap myImage, List<Rectangle> regions)
+          {
+               using (Graphics graphic = Graphics.FromImage(myImage))
+               {
+                    graphic.DrawRectangle(new Pen(Color.Yellow, 2), regions[0]);
+                    DisplayImage(myImage, pictureBoxStatic);
+               }
           }
 
           // Capture 1st display in the system

@@ -337,7 +337,7 @@ namespace ComputerVisionVideoPlayer
                this.pictureBox1.MinimumSize = new System.Drawing.Size(100, 100);
                this.pictureBox1.Name = "pictureBox1";
                this.pictureBox1.Size = new System.Drawing.Size(333, 212);
-               this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+               this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
                this.pictureBox1.TabIndex = 9;
                this.pictureBox1.TabStop = false;
                // 
@@ -350,7 +350,7 @@ namespace ComputerVisionVideoPlayer
                this.pictureBox2.MinimumSize = new System.Drawing.Size(100, 100);
                this.pictureBox2.Name = "pictureBox2";
                this.pictureBox2.Size = new System.Drawing.Size(333, 212);
-               this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+               this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
                this.pictureBox2.TabIndex = 10;
                this.pictureBox2.TabStop = false;
                // 
@@ -379,7 +379,7 @@ namespace ComputerVisionVideoPlayer
                this.pictureBoxStatic.Location = new System.Drawing.Point(3, 491);
                this.pictureBoxStatic.Name = "pictureBoxStatic";
                this.pictureBoxStatic.Size = new System.Drawing.Size(50, 50);
-               this.pictureBoxStatic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+               this.pictureBoxStatic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
                this.pictureBoxStatic.TabIndex = 11;
                this.pictureBoxStatic.TabStop = false;
                this.pictureBoxStatic.UseWaitCursor = true;
@@ -408,7 +408,7 @@ namespace ComputerVisionVideoPlayer
                this.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
                this.Name = "MainForm";
                this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-               this.Text = "Simple Player";
+               this.Text = "Computer Vision Video Player";
                this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
                this.mainMenuStrip.ResumeLayout(false);
                this.mainMenuStrip.PerformLayout();
