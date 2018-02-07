@@ -17,6 +17,7 @@ namespace ComputerVisionVideoPlayer
      using System.Windows.Forms;
      using Accord.Video;
      using Accord.Video.DirectShow;
+     using Accord.Video.FFMPEG;
 
      /// <summary>
      /// Class MainForm.
@@ -25,6 +26,11 @@ namespace ComputerVisionVideoPlayer
      public partial class MainForm : Form
      {
           #region Private Fields
+
+          /// <summary>
+          /// The video source
+          /// </summary>
+          private IVideoSource _videoSource = null;
 
           /// <summary>
           /// The stop watch
@@ -45,6 +51,16 @@ namespace ComputerVisionVideoPlayer
           }
 
           #endregion Public Constructors
+
+          #region Public Properties
+
+          /// <summary>
+          /// Gets or sets the video source.
+          /// </summary>
+          /// <value>The video source.</value>
+          public IVideoSource VideoSource { get => this._videoSource; set => this._videoSource = value; }
+
+          #endregion Public Properties
 
           #region Private Methods
 
@@ -72,6 +88,26 @@ namespace ComputerVisionVideoPlayer
                }
           }
 
+          private void EnablePictureBoxStatic()
+          {
+               this.tableLayoutPanel1.Controls.Add(this.pictureBoxStatic, 1, 0);
+               this.tableLayoutPanel1.SetColumnSpan(this.pictureBoxStatic, 2);
+               this.tableLayoutPanel1.SetRowSpan(this.pictureBoxStatic, 5);
+               this.pictureBoxStatic.MinimumSize = new Size(640, 480);
+               pictureBoxStatic.Visible = true;
+               pictureBoxStatic.Enabled = true;
+               videoSourcePlayer.Visible = false;
+               videoSourcePlayer.Enabled = false;
+          }
+
+          private void EnableVideoSourcePlayer()
+          {
+               pictureBoxStatic.Visible = false;
+               pictureBoxStatic.Enabled = false;
+               videoSourcePlayer.Visible = true;
+               videoSourcePlayer.Enabled = true;
+          }
+
           // "Exit" menu item clicked
           /// <summary>
           /// Handles the Click event of the exitToolStripMenuItem control.
@@ -91,16 +127,7 @@ namespace ComputerVisionVideoPlayer
           /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
           private void localVideoCaptureDeviceToolStripMenuItem_Click(object sender, EventArgs e)
           {
-               VideoCaptureDeviceForm form = new VideoCaptureDeviceForm();
-
-               if (form.ShowDialog(this) == DialogResult.OK)
-               {
-                    // create video source
-                    VideoCaptureDevice videoSource = form.VideoDevice;
-
-                    // open it
-                    OpenVideoSource(videoSource);
-               }
+               OpenVideoDeviceSource();
           }
 
           /// <summary>
@@ -111,6 +138,18 @@ namespace ComputerVisionVideoPlayer
           private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
           {
                CloseCurrentVideoSource();
+          }
+
+          private void OpenImageFileSource()
+          {
+               openFileDialog.Filter = "Image files|*.jpg;*.jpeg;*.bmp;*.png|All files|*.*";
+               openFileDialog.FileName = string.Empty;
+               if (openFileDialog.ShowDialog() == DialogResult.OK)
+               {
+                    FileNameLabel.Text = openFileDialog.FileName;
+                    Bitmap MyImage = new Bitmap(openFileDialog.FileName);
+                    pictureBoxStatic.Image = MyImage;
+               }
           }
 
           // Open JPEG URL
@@ -132,10 +171,10 @@ namespace ComputerVisionVideoPlayer
                if (form.ShowDialog(this) == DialogResult.OK)
                {
                     // create video source
-                    JPEGStream jpegSource = new JPEGStream(form.URL);
+                    _videoSource = new JPEGStream(form.URL);
 
                     // open it
-                    OpenVideoSource(jpegSource);
+                    OpenVideoSource(_videoSource);
                }
           }
 
@@ -159,29 +198,68 @@ namespace ComputerVisionVideoPlayer
                if (form.ShowDialog(this) == DialogResult.OK)
                {
                     // create video source
-                    MJPEGStream mjpegSource = new MJPEGStream(form.URL);
+                    _videoSource = new MJPEGStream(form.URL);
 
                     // open it
-                    OpenVideoSource(mjpegSource);
+                    OpenVideoSource(_videoSource);
+               }
+          }
+
+          private void OpenVideoDeviceSource()
+          {
+               VideoCaptureDeviceForm form = new VideoCaptureDeviceForm();
+
+               if (form.ShowDialog(this) == DialogResult.OK)
+               {
+                    // create video source
+                    _videoSource = form.VideoDevice;
+
+                    // open it
+                    OpenVideoSource(_videoSource);
+               }
+          }
+
+          private void OpenVideoFileSource()
+          {
+               openFileDialog.Filter = "Video files|*.mp4|All files|*.*";
+               openFileDialog.FileName = string.Empty;
+               if (openFileDialog.ShowDialog() == DialogResult.OK)
+               {
+                    // create video source
+                    _videoSource = new VideoFileSource(openFileDialog.FileName);
+
+                    // open it
+                    OpenVideoSource(_videoSource);
                }
           }
 
           // Open video file using DirectShow
           /// <summary>
-          /// Handles the Click event of the openVideofileusingDirectShowToolStripMenuItem control.
+          /// Handles the Click event of the openVideoFileUsingDirectShowToolStripMenuItem control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
           /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-          private void openVideofileusingDirectShowToolStripMenuItem_Click(object sender, EventArgs e)
+          private void openVideoFileUsingDirectShowToolStripMenuItem_Click(object sender, EventArgs e)
           {
                if (openFileDialog.ShowDialog() == DialogResult.OK)
                {
                     // create video source
-                    FileVideoSource fileSource = new FileVideoSource(openFileDialog.FileName);
+                    _videoSource = new FileVideoSource(openFileDialog.FileName);
 
                     // open it
-                    OpenVideoSource(fileSource);
+                    OpenVideoSource(_videoSource);
                }
+          }
+
+          // Open video file using FFMPEG
+          /// <summary>
+          /// Handles the Click event of the openVideoFileUsingFfmpegToolStripMenuItem control.
+          /// </summary>
+          /// <param name="sender">The source of the event.</param>
+          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          private void openVideoFileUsingFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
+          {
+               OpenVideoFileSource();
           }
 
           // Open video source
@@ -208,6 +286,31 @@ namespace ComputerVisionVideoPlayer
                timer.Start();
 
                this.Cursor = Cursors.Default;
+          }
+
+          private void radioButtonImageSource_Click(object sender, EventArgs e)
+          {
+               switch ((sender as RadioButton).Text)
+               {
+                    case "Still":
+                         CloseCurrentVideoSource();
+                         EnablePictureBoxStatic();
+                         OpenImageFileSource();
+                         break;
+
+                    case "Video File":
+                         EnableVideoSourcePlayer();
+                         OpenVideoFileSource();
+                         break;
+
+                    case "Camera":
+                         EnableVideoSourcePlayer();
+                         OpenVideoDeviceSource();
+                         break;
+
+                    default:
+                         break;
+               }
           }
 
           // On timer event - gather statistics
@@ -274,5 +377,10 @@ namespace ComputerVisionVideoPlayer
           }
 
           #endregion Private Methods
+
+          private void ButtonGetImage_Click(object sender, EventArgs e)
+          {
+
+          }
      }
 }
