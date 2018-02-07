@@ -259,3 +259,7 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/Images/input.mp4
+/Documentation/Camera Calibration using Vanishing Points.pdf
+/Documentation/Camera calibration using two or three vanishing points.pdf
+/Documentation/Camera Calibration Single View Geometry.pdf

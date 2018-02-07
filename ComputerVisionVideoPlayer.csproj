@@ -121,10 +121,15 @@
   <ItemGroup>
     <None Include="Accord.dll.config" />
     <None Include="app.config" />
+    <None Include="Documentation\Camera Calibration Single View Geometry.pdf" />
+    <None Include="Documentation\Camera calibration using two or three vanishing points.pdf" />
+    <None Include="Documentation\Camera Calibration using Vanishing Points.pdf" />
+    <None Include="Documentation\Simultaneous Vanishing Point Detection  and Camera Calibration  from Single Images .pdf" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utilities\Utility.cs" />
     <Compile Include="Views\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,14 +157,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Documentation\" />
-    <Folder Include="Images\" />
     <Folder Include="Libraries\" />
     <Folder Include="Models\" />
     <Folder Include="Tests\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\Degeneres_selfie.jpg" />
+    <Content Include="Images\input.mp4" />
+    <Content Include="Images\Mario.mp4" />
+    <Content Include="Images\Traffic Sign.jpg" />
     <Content Include="License-LGPL.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
