@@ -232,19 +232,20 @@ namespace ComputerVisionVideoPlayer
                this.ButtonGetImage.Text = "Get Image...";
                this.ButtonGetImage.UseVisualStyleBackColor = true;
                this.ButtonGetImage.Visible = false;
-               this.ButtonGetImage.Click += new System.EventHandler(this.ButtonGetImage_Click);
                // 
                // ButtonProcess
                // 
                this.ButtonProcess.AutoSize = true;
                this.ButtonProcess.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
                this.ButtonProcess.Dock = System.Windows.Forms.DockStyle.Fill;
+               this.ButtonProcess.Enabled = false;
                this.ButtonProcess.Location = new System.Drawing.Point(3, 86);
                this.ButtonProcess.Name = "ButtonProcess";
                this.ButtonProcess.Size = new System.Drawing.Size(100, 23);
                this.ButtonProcess.TabIndex = 4;
                this.ButtonProcess.Text = "Run Process";
                this.ButtonProcess.UseVisualStyleBackColor = true;
+               this.ButtonProcess.Click += new System.EventHandler(this.ButtonProcess_Click);
                // 
                // button3
                // 
@@ -336,9 +337,9 @@ namespace ComputerVisionVideoPlayer
                this.pictureBox1.MinimumSize = new System.Drawing.Size(100, 100);
                this.pictureBox1.Name = "pictureBox1";
                this.pictureBox1.Size = new System.Drawing.Size(333, 212);
+               this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
                this.pictureBox1.TabIndex = 9;
                this.pictureBox1.TabStop = false;
-               this.pictureBox1.Visible = false;
                // 
                // pictureBox2
                // 
@@ -349,9 +350,9 @@ namespace ComputerVisionVideoPlayer
                this.pictureBox2.MinimumSize = new System.Drawing.Size(100, 100);
                this.pictureBox2.Name = "pictureBox2";
                this.pictureBox2.Size = new System.Drawing.Size(333, 212);
+               this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
                this.pictureBox2.TabIndex = 10;
                this.pictureBox2.TabStop = false;
-               this.pictureBox2.Visible = false;
                // 
                // videoSourcePlayer
                // 

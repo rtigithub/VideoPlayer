@@ -1,7 +1,7 @@
 ﻿// ***********************************************************************
 // Assembly         : WindowsApplication
 // Author           : Resolution Technology, Inc.
-// Last Modified On : 02-06-2018
+// Last Modified On : 02-07-2018
 // ***********************************************************************
 // <copyright file="MainForm.cs" company="Resolution Technology, Inc.">
 //     Resolution Technology, Inc. © 2018; Portions AForge © 2008
@@ -12,9 +12,14 @@
 namespace ComputerVisionVideoPlayer
 {
      using System;
+     using System.Collections.Generic;
      using System.Diagnostics;
      using System.Drawing;
+     using System.Drawing.Imaging;
      using System.Windows.Forms;
+     using Accord.Imaging;
+     using Accord.Imaging.Filters;
+     using Accord.Math.Geometry;
      using Accord.Video;
      using Accord.Video.DirectShow;
      using Accord.Video.FFMPEG;
@@ -26,6 +31,11 @@ namespace ComputerVisionVideoPlayer
      public partial class MainForm : Form
      {
           #region Private Fields
+
+          /// <summary>
+          /// My image
+          /// </summary>
+          private Bitmap _myImage;
 
           /// <summary>
           /// The video source
@@ -43,7 +53,7 @@ namespace ComputerVisionVideoPlayer
 
           // Class constructor
           /// <summary>
-          /// Initializes a new instance of the <see cref="MainForm"/> class.
+          /// Initializes a new instance of the <see cref="MainForm" /> class.
           /// </summary>
           public MainForm()
           {
@@ -55,6 +65,34 @@ namespace ComputerVisionVideoPlayer
           #region Public Properties
 
           /// <summary>
+          /// Gets the BLOB count.
+          /// </summary>
+          /// <value>The BLOB count.</value>
+          public BlobCounter blobCount { get; private set; }
+
+          /// <summary>
+          /// Gets my image.
+          /// </summary>
+          /// <value>My image.</value>
+          public Bitmap MyImage
+          {
+               get { return _myImage; }
+               private set
+               {
+                    // make sure the image has 24 bpp format
+                    if (value.PixelFormat != PixelFormat.Format24bppRgb)
+                    {
+                         _myImage = Accord.Imaging.Image.Clone(_myImage, PixelFormat.Format24bppRgb);
+                    }
+                    else
+                    {
+                         _myImage = value;
+                    }
+                    ButtonProcess.Enabled = true;
+               }
+          }
+
+          /// <summary>
           /// Gets or sets the video source.
           /// </summary>
           /// <value>The video source.</value>
@@ -64,12 +102,50 @@ namespace ComputerVisionVideoPlayer
 
           #region Private Methods
 
+          /// <summary>
+          /// Applies the filter.
+          /// </summary>
+          /// <param name="myImage">My image.</param>
+          /// <param name="filter">The filter.</param>
+          /// <returns>Bitmap.</returns>
+          private Bitmap ApplyFilter(Bitmap myImage, IFilter filter)
+          {
+               try
+               {
+                    return filter.Apply(myImage);
+               }
+               finally
+               {
+                    //myImage.Dispose();
+               }
+          }
+
+          /// <summary>
+          /// Handles the Click event of the ButtonProcess control.
+          /// </summary>
+          /// <param name="sender">The source of the event.</param>
+          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          private void ButtonProcess_Click(object sender, EventArgs e)
+          {
+               Bitmap GrayImage = ApplyFilter(new Bitmap(MyImage), Grayscale.CommonAlgorithms.RMY);
+               Bitmap EdgeImage = ApplyFilter(GrayImage, new SobelEdgeDetector());
+               DisplayImage(EdgeImage, pictureBox1);
+               Bitmap SegmentedImage = ApplyFilter(EdgeImage, new Threshold(128));
+               //DisplayImage(SegmentedImage, pictureBox2);
+               Blob[] _blobs = SegmentBlobs(SegmentedImage);
+               List<Rectangle> regions = FindShapes(SegmentedImage, _blobs);
+
+               Crop crop = new Crop(regions[0]);
+               Bitmap FinalImage = crop.Apply(MyImage);
+               DisplayImage(FinalImage, pictureBox2);
+          }
+
           // Capture 1st display in the system
           /// <summary>
           /// Handles the Click event of the capture1stDisplayToolStripMenuItem control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void capture1stDisplayToolStripMenuItem_Click(object sender, EventArgs e)
           {
                OpenVideoSource(new ScreenCaptureStream(Screen.AllScreens[0].Bounds, 100));
@@ -88,6 +164,19 @@ namespace ComputerVisionVideoPlayer
                }
           }
 
+          /// <summary>
+          /// Displays the image.
+          /// </summary>
+          /// <param name="processImage">The process image.</param>
+          /// <param name="pictureBox">The picture box.</param>
+          private void DisplayImage(Bitmap processImage, Accord.Controls.PictureBox pictureBox)
+          {
+               pictureBox.Image = processImage;
+          }
+
+          /// <summary>
+          /// Enables the picture box static.
+          /// </summary>
           private void EnablePictureBoxStatic()
           {
                this.tableLayoutPanel1.Controls.Add(this.pictureBoxStatic, 1, 0);
@@ -100,6 +189,9 @@ namespace ComputerVisionVideoPlayer
                videoSourcePlayer.Enabled = false;
           }
 
+          /// <summary>
+          /// Enables the video source player.
+          /// </summary>
           private void EnableVideoSourcePlayer()
           {
                pictureBoxStatic.Visible = false;
@@ -113,10 +205,31 @@ namespace ComputerVisionVideoPlayer
           /// Handles the Click event of the exitToolStripMenuItem control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void exitToolStripMenuItem_Click(object sender, EventArgs e)
           {
                this.Close();
+          }
+
+          /// <summary>
+          /// Finds the shapes.
+          /// </summary>
+          /// <param name="image">The image.</param>
+          /// <param name="blobs">The blobs.</param>
+          /// <returns>List&lt;Rectangle&gt;.</returns>
+          private List<Rectangle> FindShapes(Bitmap image, Blob[] blobs)
+          {
+               SimpleShapeChecker simpleShapeChecker = new SimpleShapeChecker();
+               List<Rectangle> region = new List<Rectangle>();
+               foreach (var _blob in blobs)
+               {
+                    List<Accord.IntPoint> edgePoints = blobCount.GetBlobsEdgePoints(_blob);
+                    if (simpleShapeChecker.IsCircle(edgePoints))
+                    {
+                         region.Add(_blob.Rectangle);
+                    }
+               }
+               return region;
           }
 
           // Open local video capture device
@@ -124,7 +237,7 @@ namespace ComputerVisionVideoPlayer
           /// Handles the Click event of the localVideoCaptureDeviceToolStripMenuItem control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void localVideoCaptureDeviceToolStripMenuItem_Click(object sender, EventArgs e)
           {
                OpenVideoDeviceSource();
@@ -134,12 +247,15 @@ namespace ComputerVisionVideoPlayer
           /// Handles the FormClosing event of the MainForm control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="FormClosingEventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="FormClosingEventArgs" /> instance containing the event data.</param>
           private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
           {
                CloseCurrentVideoSource();
           }
 
+          /// <summary>
+          /// Opens the image file source.
+          /// </summary>
           private void OpenImageFileSource()
           {
                openFileDialog.Filter = "Image files|*.jpg;*.jpeg;*.bmp;*.png|All files|*.*";
@@ -147,8 +263,8 @@ namespace ComputerVisionVideoPlayer
                if (openFileDialog.ShowDialog() == DialogResult.OK)
                {
                     FileNameLabel.Text = openFileDialog.FileName;
-                    Bitmap MyImage = new Bitmap(openFileDialog.FileName);
-                    pictureBoxStatic.Image = MyImage;
+                    MyImage = new Bitmap(openFileDialog.FileName);
+                    DisplayImage(MyImage, pictureBoxStatic);
                }
           }
 
@@ -157,7 +273,7 @@ namespace ComputerVisionVideoPlayer
           /// Handles the Click event of the openJPEGURLToolStripMenuItem control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void openJPEGURLToolStripMenuItem_Click(object sender, EventArgs e)
           {
                URLForm form = new URLForm();
@@ -183,7 +299,7 @@ namespace ComputerVisionVideoPlayer
           /// Handles the Click event of the openMJPEGURLToolStripMenuItem control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void openMJPEGURLToolStripMenuItem_Click(object sender, EventArgs e)
           {
                URLForm form = new URLForm();
@@ -205,6 +321,9 @@ namespace ComputerVisionVideoPlayer
                }
           }
 
+          /// <summary>
+          /// Opens the video device source.
+          /// </summary>
           private void OpenVideoDeviceSource()
           {
                VideoCaptureDeviceForm form = new VideoCaptureDeviceForm();
@@ -219,6 +338,9 @@ namespace ComputerVisionVideoPlayer
                }
           }
 
+          /// <summary>
+          /// Opens the video file source.
+          /// </summary>
           private void OpenVideoFileSource()
           {
                openFileDialog.Filter = "Video files|*.mp4|All files|*.*";
@@ -238,7 +360,7 @@ namespace ComputerVisionVideoPlayer
           /// Handles the Click event of the openVideoFileUsingDirectShowToolStripMenuItem control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void openVideoFileUsingDirectShowToolStripMenuItem_Click(object sender, EventArgs e)
           {
                if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -256,7 +378,7 @@ namespace ComputerVisionVideoPlayer
           /// Handles the Click event of the openVideoFileUsingFfmpegToolStripMenuItem control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void openVideoFileUsingFfmpegToolStripMenuItem_Click(object sender, EventArgs e)
           {
                OpenVideoFileSource();
@@ -288,6 +410,11 @@ namespace ComputerVisionVideoPlayer
                this.Cursor = Cursors.Default;
           }
 
+          /// <summary>
+          /// Handles the Click event of the radioButtonImageSource control.
+          /// </summary>
+          /// <param name="sender">The source of the event.</param>
+          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
           private void radioButtonImageSource_Click(object sender, EventArgs e)
           {
                switch ((sender as RadioButton).Text)
@@ -313,12 +440,27 @@ namespace ComputerVisionVideoPlayer
                }
           }
 
+          /// <summary>
+          /// Segments the blobs.
+          /// </summary>
+          /// <param name="_image">The image.</param>
+          /// <returns>Blob[].</returns>
+          private Blob[] SegmentBlobs(Bitmap _image)
+          {
+               blobCount = new BlobCounter();
+               blobCount.FilterBlobs = true;
+               blobCount.MinHeight = 80;
+               blobCount.MinWidth = 80;
+               blobCount.ProcessImage(_image);
+               return blobCount.GetObjectsInformation();
+          }
+
           // On timer event - gather statistics
           /// <summary>
           /// Handles the Tick event of the timer control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void timer_Tick(object sender, EventArgs e)
           {
                IVideoSource videoSource = videoSourcePlayer.VideoSource;
@@ -350,7 +492,7 @@ namespace ComputerVisionVideoPlayer
           /// Handles the Click event of the videoSourcePlayer control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void videoSourcePlayer_Click(object sender, EventArgs e)
           {
                videoSourcePlayer.SignalToStop();
@@ -362,7 +504,7 @@ namespace ComputerVisionVideoPlayer
           /// Handles the NewFrame event of the videoSourcePlayer control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="args">The <see cref="NewFrameEventArgs"/> instance containing the event data.</param>
+          /// <param name="args">The <see cref="NewFrameEventArgs" /> instance containing the event data.</param>
           private void videoSourcePlayer_NewFrame(object sender, NewFrameEventArgs args)
           {
                DateTime now = DateTime.Now;
@@ -377,10 +519,5 @@ namespace ComputerVisionVideoPlayer
           }
 
           #endregion Private Methods
-
-          private void ButtonGetImage_Click(object sender, EventArgs e)
-          {
-
-          }
      }
 }
