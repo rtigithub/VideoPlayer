@@ -38,9 +38,21 @@ namespace ComputerVisionVideoPlayer
           private Bitmap _myImage;
 
           /// <summary>
+          /// The processed image
+          /// </summary>
+          private Bitmap _processedImage;
+
+          /// <summary>
+          /// The threshold image
+          /// </summary>
+          private Bitmap _thresholdImage;
+
+          /// <summary>
           /// The video source
           /// </summary>
           private IVideoSource _videoSource = null;
+
+          private HoughLineTransformation laneLines = new HoughLineTransformation();
 
           /// <summary>
           /// The stop watch
@@ -79,16 +91,38 @@ namespace ComputerVisionVideoPlayer
                get { return _myImage; }
                private set
                {
-                    // make sure the image has 24 bpp format
-                    if (value.PixelFormat != PixelFormat.Format24bppRgb)
-                    {
-                         _myImage = Accord.Imaging.Image.Clone(_myImage, PixelFormat.Format24bppRgb);
-                    }
-                    else
-                    {
-                         _myImage = value;
-                    }
+                    _myImage = SetBitmapPixelFormat(ref value, PixelFormat.Format24bppRgb);
                     ButtonProcess.Enabled = true;
+               }
+          }
+
+          /// <summary>
+          /// Gets the processed image.
+          /// </summary>
+          /// <value>The processed image.</value>
+          public Bitmap ProcessedImage
+          {
+               get { return _processedImage; }
+               private set
+               {
+                    _processedImage = SetBitmapPixelFormat(ref value, PixelFormat.Format8bppIndexed);
+
+                    DisplayImage(_processedImage, pictureBox2);
+               }
+          }
+
+          /// <summary>
+          /// Gets the threshold image.
+          /// </summary>
+          /// <value>The threshold image.</value>
+          public Bitmap ThresholdImage
+          {
+               get { return _thresholdImage; }
+               private set
+               {
+                    _thresholdImage = SetBitmapPixelFormat(ref value, PixelFormat.Format8bppIndexed);
+
+                    DisplayImage(_thresholdImage, pictureBox1);
                }
           }
 
@@ -97,6 +131,15 @@ namespace ComputerVisionVideoPlayer
           /// </summary>
           /// <value>The video source.</value>
           public IVideoSource VideoSource { get => this._videoSource; set => this._videoSource = value; }
+          public HoughLineTransformation LaneLines
+          {
+               get => this.laneLines;
+               set
+               {
+                    this.laneLines = value;
+                    this.laneLines.MinLineIntensity = 10;
+               }
+          }
 
           #endregion Public Properties
 
@@ -121,10 +164,26 @@ namespace ComputerVisionVideoPlayer
           }
 
           /// <summary>
+          /// Applies the threshold filter sequence.
+          /// </summary>
+          /// <param name="image">The image.</param>
+          /// <returns>Bitmap.</returns>
+          private Bitmap ApplyThresholdFilterSequence(Bitmap image)
+          {
+               FiltersSequence ThresholdFilterSequence = new FiltersSequence(
+                         Grayscale.CommonAlgorithms.Y,
+                         new Threshold(128),
+                         new CanvasFill(new Rectangle(0, 0, image.Width, (int)(image.Height * 0.65)), 0),
+                         new CannyEdgeDetector()
+                         );
+               return ThresholdFilterSequence.Apply(image);
+          }
+
+          /// <summary>
           /// Handles the Click event of the ButtonProcess control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void ButtonProcess_Click(object sender, EventArgs e)
           {
                Bitmap GrayImage = ApplyFilter(new Bitmap(MyImage), Grayscale.CommonAlgorithms.RMY);
@@ -137,15 +196,6 @@ namespace ComputerVisionVideoPlayer
                DisplayRegionsOnSourceImage(MyImage, regions);
                Crop crop = new Crop(regions[0]);
                DisplayImage(crop.Apply(MyImage), pictureBox2);
-          }
-
-          private void DisplayRegionsOnSourceImage(Bitmap myImage, List<Rectangle> regions)
-          {
-               using (Graphics graphic = Graphics.FromImage(myImage))
-               {
-                    graphic.DrawRectangle(new Pen(Color.Yellow, 2), regions[0]);
-                    DisplayImage(myImage, pictureBoxStatic);
-               }
           }
 
           // Capture 1st display in the system
@@ -183,6 +233,20 @@ namespace ComputerVisionVideoPlayer
           }
 
           /// <summary>
+          /// Displays the regions on source image.
+          /// </summary>
+          /// <param name="myImage">My image.</param>
+          /// <param name="regions">The regions.</param>
+          private void DisplayRegionsOnSourceImage(Bitmap myImage, List<Rectangle> regions)
+          {
+               using (Graphics graphic = Graphics.FromImage(myImage))
+               {
+                    graphic.DrawRectangle(new Pen(Color.Yellow, 2), regions[0]);
+                    DisplayImage(myImage, pictureBoxStatic);
+               }
+          }
+
+          /// <summary>
           /// Enables the picture box static.
           /// </summary>
           private void EnablePictureBoxStatic()
@@ -217,6 +281,23 @@ namespace ComputerVisionVideoPlayer
           private void exitToolStripMenuItem_Click(object sender, EventArgs e)
           {
                this.Close();
+          }
+
+          /// <summary>
+          /// Finds the lane lines.
+          /// </summary>
+          /// <param name="image">The image.</param>
+          private void FindLaneLines(Bitmap image)
+          {
+               if (image != null)
+               {
+                    if (laneLines != null)
+                    {
+                         // Whenever I access the HoughLineTransform the video stops but no exception is thrown.
+                         //LaneLines.ProcessImage(image);
+                    }
+                    ProcessedImage = image;
+               }
           }
 
           /// <summary>
@@ -419,10 +500,19 @@ namespace ComputerVisionVideoPlayer
           }
 
           /// <summary>
+          /// Preprocesses the image.
+          /// </summary>
+          /// <param name="image">The image.</param>
+          private Bitmap PreprocessImage(Bitmap image)
+          {
+               return ApplyThresholdFilterSequence(image);
+          }
+
+          /// <summary>
           /// Handles the Click event of the radioButtonImageSource control.
           /// </summary>
           /// <param name="sender">The source of the event.</param>
-          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void radioButtonImageSource_Click(object sender, EventArgs e)
           {
                switch ((sender as RadioButton).Text)
@@ -461,6 +551,25 @@ namespace ComputerVisionVideoPlayer
                blobCount.MinWidth = 80;
                blobCount.ProcessImage(_image);
                return blobCount.GetObjectsInformation();
+          }
+
+          /// <summary>
+          /// Sets the bitmap pixel format.
+          /// </summary>
+          /// <param name="image">The image.</param>
+          /// <param name="pixelFormat">The pixel format.</param>
+          /// <returns>Bitmap.</returns>
+          private Bitmap SetBitmapPixelFormat(ref Bitmap image, PixelFormat pixelFormat)
+          {
+               // make sure the image has 24 bpp format
+               if (image.PixelFormat != pixelFormat)
+               {
+                    return Accord.Imaging.Image.Clone(image, pixelFormat);
+               }
+               else
+               {
+                    return image;
+               }
           }
 
           // On timer event - gather statistics
@@ -515,9 +624,10 @@ namespace ComputerVisionVideoPlayer
           /// <param name="args">The <see cref="NewFrameEventArgs" /> instance containing the event data.</param>
           private void videoSourcePlayer_NewFrame(object sender, NewFrameEventArgs args)
           {
+               ThresholdImage = PreprocessImage(args.Frame);
+               FindLaneLines(ThresholdImage);
                DateTime now = DateTime.Now;
                Graphics g = Graphics.FromImage(args.Frame);
-
                // paint current time
                SolidBrush brush = new SolidBrush(Color.Red);
                g.DrawString(now.ToString(), this.Font, brush, new PointF(5, 5));

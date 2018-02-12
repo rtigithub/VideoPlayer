@@ -71,6 +71,7 @@ namespace ComputerVisionVideoPlayer
                this.pictureBoxStatic = new Accord.Controls.PictureBox();
                this.timer = new System.Windows.Forms.Timer(this.components);
                this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+               this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
                this.mainMenuStrip.SuspendLayout();
                this.statusStrip.SuspendLayout();
                this.mainPanel.SuspendLayout();
@@ -79,6 +80,7 @@ namespace ComputerVisionVideoPlayer
                ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
                ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
                ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStatic)).BeginInit();
+               this.flowLayoutPanel1.SuspendLayout();
                this.SuspendLayout();
                // 
                // mainMenuStrip
@@ -88,7 +90,7 @@ namespace ComputerVisionVideoPlayer
             this.fileToolStripMenuItem});
                this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
                this.mainMenuStrip.Name = "mainMenuStrip";
-               this.mainMenuStrip.Size = new System.Drawing.Size(784, 24);
+               this.mainMenuStrip.Size = new System.Drawing.Size(818, 24);
                this.mainMenuStrip.TabIndex = 0;
                this.mainMenuStrip.Text = "menuStrip1";
                // 
@@ -162,7 +164,7 @@ namespace ComputerVisionVideoPlayer
                this.statusStrip.Location = new System.Drawing.Point(0, 730);
                this.statusStrip.Name = "statusStrip";
                this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 14, 0);
-               this.statusStrip.Size = new System.Drawing.Size(784, 22);
+               this.statusStrip.Size = new System.Drawing.Size(818, 22);
                this.statusStrip.TabIndex = 1;
                this.statusStrip.Text = "statusStrip1";
                // 
@@ -185,7 +187,7 @@ namespace ComputerVisionVideoPlayer
                this.mainPanel.Location = new System.Drawing.Point(0, 24);
                this.mainPanel.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
                this.mainPanel.Name = "mainPanel";
-               this.mainPanel.Size = new System.Drawing.Size(784, 706);
+               this.mainPanel.Size = new System.Drawing.Size(818, 706);
                this.mainPanel.TabIndex = 2;
                // 
                // tableLayoutPanel1
@@ -199,9 +201,8 @@ namespace ComputerVisionVideoPlayer
                this.tableLayoutPanel1.Controls.Add(this.button3, 0, 3);
                this.tableLayoutPanel1.Controls.Add(this.button4, 0, 4);
                this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 0);
-               this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 1, 5);
-               this.tableLayoutPanel1.Controls.Add(this.pictureBox2, 2, 5);
                this.tableLayoutPanel1.Controls.Add(this.videoSourcePlayer, 1, 0);
+               this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 1, 5);
                this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
                this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
                this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -217,7 +218,7 @@ namespace ComputerVisionVideoPlayer
                this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
                this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
                this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-               this.tableLayoutPanel1.Size = new System.Drawing.Size(784, 706);
+               this.tableLayoutPanel1.Size = new System.Drawing.Size(818, 706);
                this.tableLayoutPanel1.TabIndex = 1;
                // 
                // ButtonGetImage
@@ -331,9 +332,8 @@ namespace ComputerVisionVideoPlayer
                // pictureBox1
                // 
                this.pictureBox1.BackColor = System.Drawing.Color.Black;
-               this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
                this.pictureBox1.Image = null;
-               this.pictureBox1.Location = new System.Drawing.Point(109, 491);
+               this.pictureBox1.Location = new System.Drawing.Point(3, 3);
                this.pictureBox1.MinimumSize = new System.Drawing.Size(100, 100);
                this.pictureBox1.Name = "pictureBox1";
                this.pictureBox1.Size = new System.Drawing.Size(333, 212);
@@ -344,9 +344,8 @@ namespace ComputerVisionVideoPlayer
                // pictureBox2
                // 
                this.pictureBox2.BackColor = System.Drawing.Color.Black;
-               this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Fill;
                this.pictureBox2.Image = null;
-               this.pictureBox2.Location = new System.Drawing.Point(448, 491);
+               this.pictureBox2.Location = new System.Drawing.Point(342, 3);
                this.pictureBox2.MinimumSize = new System.Drawing.Size(100, 100);
                this.pictureBox2.Name = "pictureBox2";
                this.pictureBox2.Size = new System.Drawing.Size(333, 212);
@@ -356,6 +355,7 @@ namespace ComputerVisionVideoPlayer
                // 
                // videoSourcePlayer
                // 
+               this.videoSourcePlayer.AutoSizeControl = true;
                this.videoSourcePlayer.BackColor = System.Drawing.SystemColors.ControlDarkDark;
                this.tableLayoutPanel1.SetColumnSpan(this.videoSourcePlayer, 2);
                this.videoSourcePlayer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -366,7 +366,7 @@ namespace ComputerVisionVideoPlayer
                this.videoSourcePlayer.MinimumSize = new System.Drawing.Size(640, 480);
                this.videoSourcePlayer.Name = "videoSourcePlayer";
                this.tableLayoutPanel1.SetRowSpan(this.videoSourcePlayer, 5);
-               this.videoSourcePlayer.Size = new System.Drawing.Size(674, 480);
+               this.videoSourcePlayer.Size = new System.Drawing.Size(708, 480);
                this.videoSourcePlayer.TabIndex = 0;
                this.videoSourcePlayer.VideoSource = null;
                this.videoSourcePlayer.NewFrameReceived += new Accord.Video.NewFrameEventHandler(this.videoSourcePlayer_NewFrame);
@@ -395,12 +395,23 @@ namespace ComputerVisionVideoPlayer
                this.openFileDialog.Filter = "AVI files (*.avi)|*.avi|All files (*.*)|*.*";
                this.openFileDialog.Title = "Opem movie";
                // 
+               // flowLayoutPanel1
+               // 
+               this.tableLayoutPanel1.SetColumnSpan(this.flowLayoutPanel1, 2);
+               this.flowLayoutPanel1.Controls.Add(this.pictureBox1);
+               this.flowLayoutPanel1.Controls.Add(this.pictureBox2);
+               this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+               this.flowLayoutPanel1.Location = new System.Drawing.Point(109, 491);
+               this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+               this.flowLayoutPanel1.Size = new System.Drawing.Size(706, 212);
+               this.flowLayoutPanel1.TabIndex = 11;
+               // 
                // MainForm
                // 
                this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
                this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
                this.AutoSize = true;
-               this.ClientSize = new System.Drawing.Size(784, 752);
+               this.ClientSize = new System.Drawing.Size(818, 752);
                this.Controls.Add(this.mainPanel);
                this.Controls.Add(this.statusStrip);
                this.Controls.Add(this.mainMenuStrip);
@@ -422,6 +433,7 @@ namespace ComputerVisionVideoPlayer
                ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
                ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
                ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStatic)).EndInit();
+               this.flowLayoutPanel1.ResumeLayout(false);
                this.ResumeLayout(false);
                this.PerformLayout();
 
@@ -499,6 +511,7 @@ namespace ComputerVisionVideoPlayer
           private Accord.Controls.PictureBox pictureBox2;
           private Accord.Controls.PictureBox pictureBoxStatic;
           private System.Windows.Forms.ToolStripStatusLabel FileNameLabel;
+          private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
      }
 }
 

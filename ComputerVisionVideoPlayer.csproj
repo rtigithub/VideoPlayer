@@ -6,7 +6,7 @@
     <OutputType>WinExe</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>WindowsApplication</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -77,46 +77,74 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accord, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>packages\Accord.3.8.2-alpha\lib\net40\Accord.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.Controls, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>packages\Accord.Controls.3.8.2-alpha\lib\net40\Accord.Controls.dll</HintPath>
+      <HintPath>packages\Accord.3.8.2-alpha\lib\net462\Accord.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Controls.Imaging, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>packages\Accord.Controls.Imaging.3.8.2-alpha\lib\net40\Accord.Controls.Imaging.dll</HintPath>
+      <HintPath>packages\Accord.Controls.Imaging.3.8.2-alpha\lib\net462\Accord.Controls.Imaging.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Imaging, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>packages\Accord.Imaging.3.8.2-alpha\lib\net40\Accord.Imaging.dll</HintPath>
+      <HintPath>packages\Accord.Imaging.3.8.2-alpha\lib\net462\Accord.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.MachineLearning, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>packages\Accord.MachineLearning.3.8.2-alpha\lib\net462\Accord.MachineLearning.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Math, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>packages\Accord.Math.3.8.2-alpha\lib\net40\Accord.Math.dll</HintPath>
+      <HintPath>packages\Accord.Math.3.8.2-alpha\lib\net462\Accord.Math.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Math.Core, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>packages\Accord.Math.3.8.2-alpha\lib\net40\Accord.Math.Core.dll</HintPath>
+      <HintPath>packages\Accord.Math.3.8.2-alpha\lib\net462\Accord.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Statistics, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>packages\Accord.Statistics.3.8.2-alpha\lib\net40\Accord.Statistics.dll</HintPath>
+      <HintPath>packages\Accord.Statistics.3.8.2-alpha\lib\net462\Accord.Statistics.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Video, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>packages\Accord.Video.3.8.2-alpha\lib\net40\Accord.Video.dll</HintPath>
+      <HintPath>packages\Accord.Video.3.8.2-alpha\lib\net462\Accord.Video.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Video.DirectShow, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
-      <HintPath>packages\Accord.Video.DirectShow.3.8.2-alpha\lib\net40\Accord.Video.DirectShow.dll</HintPath>
+      <HintPath>packages\Accord.Video.DirectShow.3.8.2-alpha\lib\net462\Accord.Video.DirectShow.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Video.FFMPEG.x64, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=AMD64">
-      <HintPath>packages\Accord.Video.FFMPEG.x64.3.8.2-alpha\lib\net40\Accord.Video.FFMPEG.x64.dll</HintPath>
+      <HintPath>packages\Accord.Video.FFMPEG.x64.3.8.2-alpha\lib\net462\Accord.Video.FFMPEG.x64.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Vision, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>packages\Accord.Vision.3.8.2-alpha\lib\net462\Accord.Vision.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI, Version=7.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\reactiveui-core.7.4.0\lib\Net45\ReactiveUI.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI.Winforms, Version=7.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\reactiveui-winforms.7.4.0\lib\Net45\ReactiveUI.Winforms.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Splat.1.6.2\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Reactive, Version=4.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>packages\System.Reactive.4.0.0-preview00001\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Windows.Threading, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Rx-XAML.2.2.5\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="ZedGraph, Version=5.1.7.430, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
-      <HintPath>packages\ZedGraph.5.1.7\lib\net35-Client\ZedGraph.dll</HintPath>
-    </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Accord.dll.config" />
@@ -167,12 +195,12 @@
     <Content Include="Images\input.mp4" />
     <Content Include="Images\Mario.mp4" />
     <Content Include="Images\Traffic Sign.jpg" />
-    <Content Include="License-LGPL.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />
   </ProjectExtensions>
+  <Import Project="packages\Accord.3.8.2-alpha\build\Accord.targets" Condition="Exists('packages\Accord.3.8.2-alpha\build\Accord.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
@@ -180,6 +208,5 @@
     <Error Condition="!Exists('packages\Accord.3.8.2-alpha\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Accord.3.8.2-alpha\build\Accord.targets'))" />
     <Error Condition="!Exists('packages\Accord.Video.FFMPEG.x64.3.8.2-alpha\build\Accord.Video.FFMPEG.x64.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Accord.Video.FFMPEG.x64.3.8.2-alpha\build\Accord.Video.FFMPEG.x64.targets'))" />
   </Target>
-  <Import Project="packages\Accord.3.8.2-alpha\build\Accord.targets" Condition="Exists('packages\Accord.3.8.2-alpha\build\Accord.targets')" />
   <Import Project="packages\Accord.Video.FFMPEG.x64.3.8.2-alpha\build\Accord.Video.FFMPEG.x64.targets" Condition="Exists('packages\Accord.Video.FFMPEG.x64.3.8.2-alpha\build\Accord.Video.FFMPEG.x64.targets')" />
 </Project>
