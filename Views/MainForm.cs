@@ -23,6 +23,8 @@ namespace ComputerVisionVideoPlayer
      using Accord.Video;
      using Accord.Video.DirectShow;
      using Accord.Video.FFMPEG;
+     using Accord.Vision.Detection;
+     using Accord.Vision.Detection.Cascades;
 
      /// <summary>
      /// Class MainForm.
@@ -53,6 +55,14 @@ namespace ComputerVisionVideoPlayer
           private IVideoSource _videoSource = null;
 
           private HoughLineTransformation laneLines = new HoughLineTransformation();
+
+          HaarObjectDetector faceDetector = new HaarObjectDetector(
+               new FaceHaarCascade(),
+               128,
+               ObjectDetectorSearchMode.NoOverlap,
+               1.2f,
+               ObjectDetectorScalingMode.SmallerToGreater
+               );
 
           /// <summary>
           /// The stop watch
@@ -186,16 +196,33 @@ namespace ComputerVisionVideoPlayer
           /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void ButtonProcess_Click(object sender, EventArgs e)
           {
-               Bitmap GrayImage = ApplyFilter(new Bitmap(MyImage), Grayscale.CommonAlgorithms.RMY);
-               Bitmap EdgeImage = ApplyFilter(GrayImage, new SobelEdgeDetector());
-               DisplayImage(EdgeImage, pictureBox1);
-               Bitmap SegmentedImage = ApplyFilter(EdgeImage, new Threshold(128));
-               //DisplayImage(SegmentedImage, pictureBox2);
-               Blob[] _blobs = SegmentBlobs(SegmentedImage);
-               List<Rectangle> regions = FindShapes(SegmentedImage, _blobs);
-               DisplayRegionsOnSourceImage(MyImage, regions);
-               Crop crop = new Crop(regions[0]);
-               DisplayImage(crop.Apply(MyImage), pictureBox2);
+               faceDetector.UseParallelProcessing = true;
+               faceDetector.Suppression = 2;
+
+               Stopwatch sw = Stopwatch.StartNew();
+
+
+               // Process frame to detect objects
+               Rectangle[] regions = faceDetector.ProcessFrame(_myImage);
+
+               sw.Stop();
+
+               DisplayRegionsOnSourceImage(_myImage, regions);
+               
+               fpsLabel.Text = string.Format("Completed detection of {0} objects in {1}.",
+                   regions.Length, sw.Elapsed);
+          }
+
+          private void DisplayRegionsOnSourceImage(Bitmap myImage, Rectangle[] regions)
+          {
+               using (Graphics graphic = Graphics.FromImage(myImage))
+               {
+                    foreach (var region in regions)
+                    {
+                         graphic.DrawRectangle(new Pen(Color.Yellow, 5), region);
+                         DisplayImage(myImage, pictureBoxStatic);
+                    }
+               }
           }
 
           // Capture 1st display in the system
@@ -241,8 +268,11 @@ namespace ComputerVisionVideoPlayer
           {
                using (Graphics graphic = Graphics.FromImage(myImage))
                {
-                    graphic.DrawRectangle(new Pen(Color.Yellow, 2), regions[0]);
-                    DisplayImage(myImage, pictureBoxStatic);
+                    foreach (var region in regions)
+                    {
+                         graphic.DrawRectangle(new Pen(Color.Yellow, 2), regions[0]);
+                         DisplayImage(myImage, pictureBoxStatic);
+                    }
                }
           }
 
