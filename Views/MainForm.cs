@@ -1,7 +1,7 @@
 ﻿// ***********************************************************************
 // Assembly         : WindowsApplication
 // Author           : Resolution Technology, Inc.
-// Last Modified On : 02-07-2018
+// Last Modified On : 02-16-2018
 // ***********************************************************************
 // <copyright file="MainForm.cs" company="Resolution Technology, Inc.">
 //     Resolution Technology, Inc. © 2018; Portions AForge © 2008
@@ -16,6 +16,7 @@ namespace ComputerVisionVideoPlayer
      using System.Diagnostics;
      using System.Drawing;
      using System.Drawing.Imaging;
+     using System.Reactive.Linq;
      using System.Windows.Forms;
      using Accord.Imaging;
      using Accord.Imaging.Filters;
@@ -25,12 +26,16 @@ namespace ComputerVisionVideoPlayer
      using Accord.Video.FFMPEG;
      using Accord.Vision.Detection;
      using Accord.Vision.Detection.Cascades;
+     using ComputerVisionVideoPlayer.Models;
+     using ComputerVisionVideoPlayer.ViewModels;
+     using ReactiveUI;
 
      /// <summary>
      /// Class MainForm.
      /// </summary>
+     /// <seealso cref="ReactiveUI.IViewFor{ComputerVisionVideoPlayer.ViewModels.MainFormViewModel}" />
      /// <seealso cref="System.Windows.Forms.Form" />
-     public partial class MainForm : Form
+     public partial class MainForm : Form, IViewFor<ViewModels.MainFormViewModel>
      {
           #region Private Fields
 
@@ -54,15 +59,31 @@ namespace ComputerVisionVideoPlayer
           /// </summary>
           private IVideoSource _videoSource = null;
 
-          private HoughLineTransformation laneLines = new HoughLineTransformation();
-
-          HaarObjectDetector faceDetector = new HaarObjectDetector(
+          /// <summary>
+          /// The face detector
+          /// </summary>
+          private HaarObjectDetector faceDetector = new HaarObjectDetector(
                new FaceHaarCascade(),
                128,
                ObjectDetectorSearchMode.NoOverlap,
                1.2f,
                ObjectDetectorScalingMode.SmallerToGreater
                );
+
+          /// <summary>
+          /// The image processor
+          /// </summary>
+          private MarioProcessor imageProcessor;
+
+          /// <summary>
+          /// The lane lines
+          /// </summary>
+          private HoughLineTransformation laneLines = new HoughLineTransformation();
+
+          /// <summary>
+          /// The mario processor
+          /// </summary>
+          private MarioProcessor marioProcessor = new MarioProcessor();
 
           /// <summary>
           /// The stop watch
@@ -80,6 +101,8 @@ namespace ComputerVisionVideoPlayer
           public MainForm()
           {
                InitializeComponent();
+               ReactiveSetup();
+               this.imageProcessor = new MarioProcessor();
           }
 
           #endregion Public Constructors
@@ -93,6 +116,26 @@ namespace ComputerVisionVideoPlayer
           public BlobCounter blobCount { get; private set; }
 
           /// <summary>
+          /// Gets or sets the lane lines.
+          /// </summary>
+          /// <value>The lane lines.</value>
+          public HoughLineTransformation LaneLines
+          {
+               get => this.laneLines;
+               set
+               {
+                    this.laneLines = value;
+                    this.laneLines.MinLineIntensity = 10;
+               }
+          }
+
+          /// <summary>
+          /// Gets or sets the main form vm.
+          /// </summary>
+          /// <value>The main form vm.</value>
+          public MainFormViewModel MainFormVM { get; set; }
+
+          /// <summary>
           /// Gets my image.
           /// </summary>
           /// <value>My image.</value>
@@ -102,7 +145,6 @@ namespace ComputerVisionVideoPlayer
                private set
                {
                     _myImage = SetBitmapPixelFormat(ref value, PixelFormat.Format24bppRgb);
-                    ButtonProcess.Enabled = true;
                }
           }
 
@@ -141,14 +183,27 @@ namespace ComputerVisionVideoPlayer
           /// </summary>
           /// <value>The video source.</value>
           public IVideoSource VideoSource { get => this._videoSource; set => this._videoSource = value; }
-          public HoughLineTransformation LaneLines
+
+          /// <summary>
+          /// The ViewModel corresponding to this specific View. This should be
+          /// a DependencyProperty if you're using XAML.
+          /// </summary>
+          /// <value>The view model.</value>
+          object IViewFor.ViewModel
           {
-               get => this.laneLines;
-               set
-               {
-                    this.laneLines = value;
-                    this.laneLines.MinLineIntensity = 10;
-               }
+               get { return MainFormVM; }
+               set { MainFormVM = (MainFormViewModel)value; }
+          }
+
+          /// <summary>
+          /// The ViewModel corresponding to this specific View. This should be
+          /// a DependencyProperty if you're using XAML.
+          /// </summary>
+          /// <value>The view model.</value>
+          MainFormViewModel IViewFor<MainFormViewModel>.ViewModel
+          {
+               get { return MainFormVM; }
+               set { MainFormVM = value; }
           }
 
           #endregion Public Properties
@@ -196,33 +251,7 @@ namespace ComputerVisionVideoPlayer
           /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
           private void ButtonProcess_Click(object sender, EventArgs e)
           {
-               faceDetector.UseParallelProcessing = true;
-               faceDetector.Suppression = 2;
-
-               Stopwatch sw = Stopwatch.StartNew();
-
-
-               // Process frame to detect objects
-               Rectangle[] regions = faceDetector.ProcessFrame(_myImage);
-
-               sw.Stop();
-
-               DisplayRegionsOnSourceImage(_myImage, regions);
-               
-               fpsLabel.Text = string.Format("Completed detection of {0} objects in {1}.",
-                   regions.Length, sw.Elapsed);
-          }
-
-          private void DisplayRegionsOnSourceImage(Bitmap myImage, Rectangle[] regions)
-          {
-               using (Graphics graphic = Graphics.FromImage(myImage))
-               {
-                    foreach (var region in regions)
-                    {
-                         graphic.DrawRectangle(new Pen(Color.Yellow, 5), region);
-                         DisplayImage(myImage, pictureBoxStatic);
-                    }
-               }
+               //marioProcessor.ProcessImage()
           }
 
           // Capture 1st display in the system
@@ -257,6 +286,23 @@ namespace ComputerVisionVideoPlayer
           private void DisplayImage(Bitmap processImage, Accord.Controls.PictureBox pictureBox)
           {
                pictureBox.Image = processImage;
+          }
+
+          /// <summary>
+          /// Displays the regions on source image.
+          /// </summary>
+          /// <param name="myImage">My image.</param>
+          /// <param name="regions">The regions.</param>
+          private void DisplayRegionsOnSourceImage(Bitmap myImage, Rectangle[] regions)
+          {
+               using (Graphics graphic = Graphics.FromImage(myImage))
+               {
+                    foreach (var region in regions)
+                    {
+                         graphic.DrawRectangle(new Pen(Color.Yellow, 5), region);
+                         DisplayImage(myImage, pictureBoxStatic);
+                    }
+               }
           }
 
           /// <summary>
@@ -373,6 +419,16 @@ namespace ComputerVisionVideoPlayer
           }
 
           /// <summary>
+          /// Handles the Load event of the MainForm control.
+          /// </summary>
+          /// <param name="sender">The source of the event.</param>
+          /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+          private void MainForm_Load(object sender, EventArgs e)
+          {
+               //var newFrame = Observable.FromEvent<NewFrameEventHandler, NewFrameEventArgs>( , );
+          }
+
+          /// <summary>
           /// Opens the image file source.
           /// </summary>
           private void OpenImageFileSource()
@@ -485,7 +541,7 @@ namespace ComputerVisionVideoPlayer
                if (openFileDialog.ShowDialog() == DialogResult.OK)
                {
                     // create video source
-                    _videoSource = new FileVideoSource(openFileDialog.FileName);
+                    _videoSource = (IVideoSource)new FileVideoSource(openFileDialog.FileName);
 
                     // open it
                     OpenVideoSource(_videoSource);
@@ -533,6 +589,7 @@ namespace ComputerVisionVideoPlayer
           /// Preprocesses the image.
           /// </summary>
           /// <param name="image">The image.</param>
+          /// <returns>Bitmap.</returns>
           private Bitmap PreprocessImage(Bitmap image)
           {
                return ApplyThresholdFilterSequence(image);
@@ -566,6 +623,17 @@ namespace ComputerVisionVideoPlayer
                     default:
                          break;
                }
+          }
+
+          /// <summary>
+          /// Reactives the setup.
+          /// </summary>
+          private void ReactiveSetup()
+          {
+               //Observable.FromEvent<VideoSourcePlayer.NewFrameHandler, Bitmap>(
+               //     handler => videoSourcePlayer.NewFrame += handler,
+               //     handler => videoSourcePlayer.NewFrame -= handler
+               //     );
           }
 
           /// <summary>
@@ -646,6 +714,17 @@ namespace ComputerVisionVideoPlayer
                videoSourcePlayer.WaitForStop();
           }
 
+          /// <summary>
+          /// Videoes the source player new frame.
+          /// </summary>
+          /// <param name="arg">The argument.</param>
+          /// <returns>System.Object.</returns>
+          /// <exception cref="NotImplementedException"></exception>
+          private object videoSourcePlayer_NewFrame(Action<object> arg)
+          {
+               throw new NotImplementedException();
+          }
+
           // New frame received by the player
           /// <summary>
           /// Handles the NewFrame event of the videoSourcePlayer control.
@@ -664,6 +743,16 @@ namespace ComputerVisionVideoPlayer
                brush.Dispose();
 
                g.Dispose();
+          }
+
+          /// <summary>
+          /// Videoes the source player new frame.
+          /// </summary>
+          /// <param name="sender">The sender.</param>
+          /// <param name="image">The image.</param>
+          private void videoSourcePlayer_NewFrame(object sender, ref Bitmap image)
+          {
+               marioProcessor.ImageToBeProcessed = Accord.Imaging.Image.Clone(image);
           }
 
           #endregion Private Methods

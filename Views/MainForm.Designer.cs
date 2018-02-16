@@ -65,22 +65,22 @@ namespace ComputerVisionVideoPlayer
                this.radioButtonVideoFile = new System.Windows.Forms.RadioButton();
                this.radioButtonCamera = new System.Windows.Forms.RadioButton();
                this.radioButtonStill = new System.Windows.Forms.RadioButton();
+               this.videoSourcePlayer = new Accord.Controls.VideoSourcePlayer();
+               this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
                this.pictureBox1 = new Accord.Controls.PictureBox();
                this.pictureBox2 = new Accord.Controls.PictureBox();
-               this.videoSourcePlayer = new Accord.Controls.VideoSourcePlayer();
                this.pictureBoxStatic = new Accord.Controls.PictureBox();
                this.timer = new System.Windows.Forms.Timer(this.components);
                this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-               this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
                this.mainMenuStrip.SuspendLayout();
                this.statusStrip.SuspendLayout();
                this.mainPanel.SuspendLayout();
                this.tableLayoutPanel1.SuspendLayout();
                this.groupBox1.SuspendLayout();
+               this.flowLayoutPanel1.SuspendLayout();
                ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
                ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
                ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStatic)).BeginInit();
-               this.flowLayoutPanel1.SuspendLayout();
                this.SuspendLayout();
                // 
                // mainMenuStrip
@@ -90,7 +90,7 @@ namespace ComputerVisionVideoPlayer
             this.fileToolStripMenuItem});
                this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
                this.mainMenuStrip.Name = "mainMenuStrip";
-               this.mainMenuStrip.Size = new System.Drawing.Size(818, 24);
+               this.mainMenuStrip.Size = new System.Drawing.Size(764, 24);
                this.mainMenuStrip.TabIndex = 0;
                this.mainMenuStrip.Text = "menuStrip1";
                // 
@@ -161,17 +161,17 @@ namespace ComputerVisionVideoPlayer
                this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fpsLabel,
             this.FileNameLabel});
-               this.statusStrip.Location = new System.Drawing.Point(0, 730);
+               this.statusStrip.Location = new System.Drawing.Point(0, 646);
                this.statusStrip.Name = "statusStrip";
                this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 14, 0);
-               this.statusStrip.Size = new System.Drawing.Size(818, 22);
+               this.statusStrip.Size = new System.Drawing.Size(764, 22);
                this.statusStrip.TabIndex = 1;
                this.statusStrip.Text = "statusStrip1";
                // 
                // fpsLabel
                // 
                this.fpsLabel.Name = "fpsLabel";
-               this.fpsLabel.Size = new System.Drawing.Size(768, 17);
+               this.fpsLabel.Size = new System.Drawing.Size(748, 17);
                this.fpsLabel.Spring = true;
                this.fpsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
                // 
@@ -187,7 +187,7 @@ namespace ComputerVisionVideoPlayer
                this.mainPanel.Location = new System.Drawing.Point(0, 24);
                this.mainPanel.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
                this.mainPanel.Name = "mainPanel";
-               this.mainPanel.Size = new System.Drawing.Size(818, 706);
+               this.mainPanel.Size = new System.Drawing.Size(764, 622);
                this.mainPanel.TabIndex = 2;
                // 
                // tableLayoutPanel1
@@ -211,14 +211,9 @@ namespace ComputerVisionVideoPlayer
                this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
                this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
                this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+               this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
                this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-               this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-               this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-               this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-               this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-               this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-               this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-               this.tableLayoutPanel1.Size = new System.Drawing.Size(818, 706);
+               this.tableLayoutPanel1.Size = new System.Drawing.Size(764, 622);
                this.tableLayoutPanel1.TabIndex = 1;
                // 
                // ButtonGetImage
@@ -268,7 +263,7 @@ namespace ComputerVisionVideoPlayer
                this.button4.Dock = System.Windows.Forms.DockStyle.Fill;
                this.button4.Location = new System.Drawing.Point(3, 173);
                this.button4.Name = "button4";
-               this.button4.Size = new System.Drawing.Size(100, 312);
+               this.button4.Size = new System.Drawing.Size(100, 194);
                this.button4.TabIndex = 6;
                this.button4.Text = "button4";
                this.button4.UseVisualStyleBackColor = true;
@@ -329,30 +324,6 @@ namespace ComputerVisionVideoPlayer
                this.radioButtonStill.UseVisualStyleBackColor = true;
                this.radioButtonStill.Click += new System.EventHandler(this.radioButtonImageSource_Click);
                // 
-               // pictureBox1
-               // 
-               this.pictureBox1.BackColor = System.Drawing.Color.Black;
-               this.pictureBox1.Image = null;
-               this.pictureBox1.Location = new System.Drawing.Point(3, 3);
-               this.pictureBox1.MinimumSize = new System.Drawing.Size(100, 100);
-               this.pictureBox1.Name = "pictureBox1";
-               this.pictureBox1.Size = new System.Drawing.Size(333, 212);
-               this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-               this.pictureBox1.TabIndex = 9;
-               this.pictureBox1.TabStop = false;
-               // 
-               // pictureBox2
-               // 
-               this.pictureBox2.BackColor = System.Drawing.Color.Black;
-               this.pictureBox2.Image = null;
-               this.pictureBox2.Location = new System.Drawing.Point(342, 3);
-               this.pictureBox2.MinimumSize = new System.Drawing.Size(100, 100);
-               this.pictureBox2.Name = "pictureBox2";
-               this.pictureBox2.Size = new System.Drawing.Size(333, 212);
-               this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-               this.pictureBox2.TabIndex = 10;
-               this.pictureBox2.TabStop = false;
-               // 
                // videoSourcePlayer
                // 
                this.videoSourcePlayer.AutoSizeControl = true;
@@ -363,14 +334,52 @@ namespace ComputerVisionVideoPlayer
                this.videoSourcePlayer.KeepAspectRatio = true;
                this.videoSourcePlayer.Location = new System.Drawing.Point(108, 4);
                this.videoSourcePlayer.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
-               this.videoSourcePlayer.MinimumSize = new System.Drawing.Size(640, 480);
+               this.videoSourcePlayer.MinimumSize = new System.Drawing.Size(480, 360);
                this.videoSourcePlayer.Name = "videoSourcePlayer";
                this.tableLayoutPanel1.SetRowSpan(this.videoSourcePlayer, 5);
-               this.videoSourcePlayer.Size = new System.Drawing.Size(708, 480);
+               this.videoSourcePlayer.Size = new System.Drawing.Size(654, 362);
                this.videoSourcePlayer.TabIndex = 0;
                this.videoSourcePlayer.VideoSource = null;
-               this.videoSourcePlayer.NewFrameReceived += new Accord.Video.NewFrameEventHandler(this.videoSourcePlayer_NewFrame);
                this.videoSourcePlayer.DoubleClick += new System.EventHandler(this.videoSourcePlayer_Click);
+               // 
+               // flowLayoutPanel1
+               // 
+               this.flowLayoutPanel1.AutoSize = true;
+               this.tableLayoutPanel1.SetColumnSpan(this.flowLayoutPanel1, 2);
+               this.flowLayoutPanel1.Controls.Add(this.pictureBox1);
+               this.flowLayoutPanel1.Controls.Add(this.pictureBox2);
+               this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+               this.flowLayoutPanel1.Location = new System.Drawing.Point(109, 373);
+               this.flowLayoutPanel1.MinimumSize = new System.Drawing.Size(0, 126);
+               this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+               this.flowLayoutPanel1.Size = new System.Drawing.Size(652, 246);
+               this.flowLayoutPanel1.TabIndex = 11;
+               // 
+               // pictureBox1
+               // 
+               this.pictureBox1.BackColor = System.Drawing.Color.Black;
+               this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
+               this.pictureBox1.Image = null;
+               this.pictureBox1.Location = new System.Drawing.Point(3, 3);
+               this.pictureBox1.MinimumSize = new System.Drawing.Size(320, 240);
+               this.pictureBox1.Name = "pictureBox1";
+               this.pictureBox1.Size = new System.Drawing.Size(320, 240);
+               this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+               this.pictureBox1.TabIndex = 9;
+               this.pictureBox1.TabStop = false;
+               // 
+               // pictureBox2
+               // 
+               this.pictureBox2.BackColor = System.Drawing.Color.Black;
+               this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Left;
+               this.pictureBox2.Image = null;
+               this.pictureBox2.Location = new System.Drawing.Point(329, 3);
+               this.pictureBox2.MinimumSize = new System.Drawing.Size(320, 240);
+               this.pictureBox2.Name = "pictureBox2";
+               this.pictureBox2.Size = new System.Drawing.Size(320, 240);
+               this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+               this.pictureBox2.TabIndex = 10;
+               this.pictureBox2.TabStop = false;
                // 
                // pictureBoxStatic
                // 
@@ -395,32 +404,23 @@ namespace ComputerVisionVideoPlayer
                this.openFileDialog.Filter = "AVI files (*.avi)|*.avi|All files (*.*)|*.*";
                this.openFileDialog.Title = "Opem movie";
                // 
-               // flowLayoutPanel1
-               // 
-               this.tableLayoutPanel1.SetColumnSpan(this.flowLayoutPanel1, 2);
-               this.flowLayoutPanel1.Controls.Add(this.pictureBox1);
-               this.flowLayoutPanel1.Controls.Add(this.pictureBox2);
-               this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-               this.flowLayoutPanel1.Location = new System.Drawing.Point(109, 491);
-               this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-               this.flowLayoutPanel1.Size = new System.Drawing.Size(706, 212);
-               this.flowLayoutPanel1.TabIndex = 11;
-               // 
                // MainForm
                // 
                this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
                this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
                this.AutoSize = true;
-               this.ClientSize = new System.Drawing.Size(818, 752);
+               this.ClientSize = new System.Drawing.Size(764, 668);
                this.Controls.Add(this.mainPanel);
                this.Controls.Add(this.statusStrip);
                this.Controls.Add(this.mainMenuStrip);
                this.MainMenuStrip = this.mainMenuStrip;
                this.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
+               this.MinimumSize = new System.Drawing.Size(780, 707);
                this.Name = "MainForm";
                this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
                this.Text = "Computer Vision Video Player";
                this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+               this.Load += new System.EventHandler(this.MainForm_Load);
                this.mainMenuStrip.ResumeLayout(false);
                this.mainMenuStrip.PerformLayout();
                this.statusStrip.ResumeLayout(false);
@@ -430,10 +430,10 @@ namespace ComputerVisionVideoPlayer
                this.tableLayoutPanel1.PerformLayout();
                this.groupBox1.ResumeLayout(false);
                this.groupBox1.PerformLayout();
+               this.flowLayoutPanel1.ResumeLayout(false);
                ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
                ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
                ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStatic)).EndInit();
-               this.flowLayoutPanel1.ResumeLayout(false);
                this.ResumeLayout(false);
                this.PerformLayout();
 
